@@ -104,12 +104,7 @@ int main(int argc, char ** argv){
     //Run CPU Cycle
     printf("PC: 0x%X| Adress at PC: 0x%X \n", PC, (memory[PC] << 8) | memory[PC + 1]);
     PC = PC + cpuStep((memory[PC] << 8) | memory[PC + 1]);
-    if(ST != 0){
-	ST--;
-    }
-    if(DT != 0){
-	DT--;
-    }
+
     //FPS Limiting
       if (1000 / FPS > SDL_GetTicks() - m_startTime)
         {

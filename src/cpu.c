@@ -12,6 +12,12 @@ int DT = 0;
 int ST = 0;
 int skipInstructionIf(bool check);
 int cpuStep(u_int16_t cI){
+    if(ST != 0){
+	ST--;
+    }
+    if(DT != 0){
+	DT--;
+    }
   int secondNibble = (cI & secondNibbleMask) >> 8;
   int thirdNibble  = (cI & thirdNibbleMask) >> 4;
   int fourthNibble = (cI & fourthNibbleMask);
@@ -121,17 +127,22 @@ int cpuStep(u_int16_t cI){
 	vI = *vX + vI;
 	return 2;
 	case 0x15:
-	ST = *vX;	
-	case 0x18:
 	DT = *vX;
+	return 2;
+	case 0x18:
+	ST = *vX;
+	return 2;
+	case 0x07:
+	*vX = DT;
+	return 2;
 	}
     case 0xE000:
 	vX = &registers[secondNibble];
 	switch(byte2){
 	case 0x9E:
-	skipInstructionIf(keyboard[*vX] == true);
+	return skipInstructionIf(keyboard[*vX] == true);
 	case 0xA1:
-	skipInstructionIf(keyboard[*vX] == false);
+	return skipInstructionIf(keyboard[*vX] == false);
 	}
     default:
 	switch(cI){
