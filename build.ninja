@@ -1,0 +1,9 @@
+rule main_o_rule
+  command = /usr/bin/gcc -c -o main.o main.c -I. 
+build main.o: main_o_rule main.c functions.h 
+rule cpu_o_rule
+  command = /usr/bin/gcc -c -o cpu.o cpu.c -I. 
+build cpu.o: cpu_o_rule cpu.c functions.h 
+rule chip8_rule
+  command = /usr/bin/gcc -o chip8 main.o cpu.o -pedantic-errors -g -lSDL2 && mv chip8 bin/chip8
+build chip8: chip8_rule cpu.o main.o 
