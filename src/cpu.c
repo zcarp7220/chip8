@@ -7,7 +7,7 @@ u_int16_t vI = 536;
 u_int16_t stack[16];
 u_int8_t SP = 0;
 unsigned char tmp;
-u_int8_t registers[15];
+u_int8_t registers[16];
 int DT = 0;
 int ST = 0;
 int skipInstructionIf(bool check);
@@ -120,11 +120,11 @@ int cpuStep(u_int16_t cI){
 	case 0x1E:
 	vI = *vX + vI;
 	return 2;
-	}
 	case 0x15:
 	ST = *vX;	
 	case 0x18:
 	DT = *vX;
+	}
     case 0xE000:
 	vX = &registers[secondNibble];
 	switch(byte2){

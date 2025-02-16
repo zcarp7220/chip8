@@ -4,7 +4,8 @@
 bool keyboard[16];
 bool screen[64][32];
 bool quit = false;
-const char keymap[16] = "1234qwerasdfzxcv";
+const char keymap[17] = "1234qwerasdfzxcv";
+char* check;
 u_int8_t memory[4096] = {
 0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
 0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -87,14 +88,14 @@ int main(int argc, char ** argv){
 	   quit = true;
     case SDL_KEYDOWN:
 	char keyinput = event.key.keysym.sym;
-	const char* check = strchr(keymap ,keyinput);
+	check = strchr(keymap ,keyinput);
 	if (check){
 	keyboard[(int)(check - keymap)] = true;
 	}
 	break;
     case SDL_KEYUP:
 	keyinput = event.key.keysym.sym;
-	check* = strchr(keymap,keyinput);
+	check = strchr(keymap,keyinput);
 	if (check){
 	keyboard[(int)(check - keymap)] = false;
 	}
