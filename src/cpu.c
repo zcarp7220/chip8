@@ -56,6 +56,8 @@ int cpuStep(u_int16_t cI){
     stack[SP] = PC;
     PC = cI & 0b0000111111111111;
     return 0;
+    case 0xC000:
+    registers[secondNibble] = (random() % 255) && byte2;
     case 0x8000:
     	u_int8_t * vX = &registers[secondNibble];
 	u_int8_t * vY = &registers[thirdNibble];
@@ -75,9 +77,7 @@ int cpuStep(u_int16_t cI){
 		case 4:
 		*vX += *vY;
 		if(*vX + *vY < 255){
-		printf("Invert!: %d ", registers[0x0F]);
 		registers[0x0F] = !registers[0x0F];
-		printf("Postinvert!: %d\n", registers[0x0F]);
 		}
 		return 2;
 		case 5:
