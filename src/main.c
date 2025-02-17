@@ -54,7 +54,7 @@ void init(char *file){
     }
     fclose(rom);
 //Temp
-memory[0x1FF] = 1;
+//memory[0x1FF] = 1;
   }
 int main(int argc, char ** argv){
     SDL_Event event;

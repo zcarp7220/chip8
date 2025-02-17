@@ -74,7 +74,7 @@ int cpuStep(u_int16_t cI){
 		return 2;
 		case 4:
 		*vX += *vY;
-		if(*vX + *vY > 255){
+		if(*vX + *vY < 255){
 		printf("Invert!: %d ", registers[0x0F]);
 		registers[0x0F] = !registers[0x0F];
 		printf("Postinvert!: %d\n", registers[0x0F]);
@@ -134,6 +134,9 @@ int cpuStep(u_int16_t cI){
 	return 2;
 	case 0x07:
 	*vX = DT;
+	return 2;
+	case 0x29:
+	vI = memory[*vX * 5];
 	return 2;
 	}
     case 0xE000:
