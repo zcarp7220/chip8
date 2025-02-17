@@ -1,10 +1,10 @@
 #include "functions.h"
 #define ROM_SIZE 1000
-#define FPS 60
+#define FPS 120
 bool keyboard[16];
 bool screen[64][32];
 bool quit = false;
-const char keymap[17] = "1234qwerasdfzxcv";
+const char keymap[17] = "1234qwerasfzxcv";
 char* check;
 u_int8_t memory[4096] = {
 0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -27,7 +27,6 @@ u_int8_t memory[4096] = {
 u_int8_t temp[ROM_SIZE];
 u_int16_t PC = 0x200;
 void init(char *file){
-	
     memset(registers, 0, sizeof(registers));
     memset(keyboard, false, sizeof(keyboard));
     FILE *rom;
@@ -104,7 +103,10 @@ int main(int argc, char ** argv){
     //Run CPU Cycle
     printf("PC: 0x%X| Adress at PC: 0x%X \n", PC, (memory[PC] << 8) | memory[PC + 1]);
     PC = PC + cpuStep((memory[PC] << 8) | memory[PC + 1]);
-
+    //Buzzer
+    if(ST != 0){
+	
+    }
     //FPS Limiting
       if (1000 / FPS > SDL_GetTicks() - m_startTime)
         {

@@ -3,7 +3,7 @@
 #define thirdNibbleMask  0b0000000011110000
 #define fourthNibbleMask 0b0000000000001111
 #define secondByteMask   0b0000000011111111
-u_int16_t vI = 536;
+u_int16_t vI = 0;
 u_int16_t stack[16];
 u_int8_t SP = 0;
 unsigned char tmp;
@@ -137,6 +137,18 @@ int cpuStep(u_int16_t cI){
 	case 0x29:
 	vI = memory[*vX * 5];
 	return 2;
+	case 0xA:
+	bool keyboardCopy = false;
+	for(int i = 0; i < 16; i++){
+	if(keyboard[i]){
+	if(keyboardCopy != keyboard[i]){
+	*vX = i;
+	return 2;
+	}
+	keyboardCopy = keyboard[i];
+	}
+	}
+	return 0;
 	}
     case 0xE000:
 	vX = &registers[secondNibble];
@@ -149,8 +161,8 @@ int cpuStep(u_int16_t cI){
     default:
 	switch(cI){
 	case 0x00E0:
-	   for(int i=0; i == 63; i++){
-       	     for(int k=0; k == 61; k++){
+	   for(int i=0; i < 63; i++){
+       	     for(int k=0; k < 61; k++){
                screen[i][k] = false;
 		}
 	}
@@ -160,11 +172,11 @@ int cpuStep(u_int16_t cI){
       	 SP--;
       return 2;
       default:
-      	char fail[256];
+      	/*char fail[256];
       	sprintf(fail, "Unknown Opcode 0x%X", cI);
       	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", fail, NULL);
-      	exit(2);
-      	//return 2;
+      	exit(2);*/
+      	return 2;
     }
   }
 }
