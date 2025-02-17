@@ -26,7 +26,7 @@ int cpuStep(u_int16_t cI){
 u_int8_t * vX = &registers[secondNibble];
 	u_int8_t * vY = &registers[thirdNibble];
   int byte2 = cI & secondByteMask;
-  switch (cI & 0b1111000000000000) {
+  switch (cI & 0xF000){
     case 0x1000:
     return (cI - 0x1000) - PC;
     case 0x6000:
@@ -36,13 +36,15 @@ u_int8_t * vX = &registers[secondNibble];
     registers[secondNibble] = byte2 + registers[secondNibble];
     return 2;
     case 0xA000:
-    vI = cI & 0x0FFF; 
+    vI = cI & 0x0FFF;
     return 2;
     case 0xD000:
     for(int i = 0; i < fourthNibble; i++){
       tmp = memory[vI + i];
-      for(int k = 0; k < 8; k++){
+      for(int k = 0; k < 8; k++){	
+        vF = screen[registers[secondNibble] + k][registers[thirdNibble] + i]; 
         screen[registers[secondNibble] + k][registers[thirdNibble] + i] ^= tmp >> (7-k) & 1;
+	if(screen[registers[secondNibble] + k][registers[thirdNibble] + i] && !vF ){registers[0xF] = 1;}
       }
 
     }
@@ -61,7 +63,8 @@ u_int8_t * vX = &registers[secondNibble];
     PC = cI & 0b0000111111111111;
     return 0;
     case 0xC000:
-    registers[secondNibble] = (random() % 255) && byte2;
+    registers[secondNibble] = (rand() % 255) && byte2;
+    return 2;
     case 0x8000:
 	vF = registers[0xF];
     	switch (fourthNibble){
@@ -137,7 +140,7 @@ u_int8_t * vX = &registers[secondNibble];
 	*vX = DT;
 	return 2;
 	case 0x29:
-	vI = memory[*vX * 5];
+	vI = *vX * 5;
 	return 2;
 	case 0xA:
 	keyboardCopy = false;
