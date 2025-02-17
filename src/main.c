@@ -116,7 +116,7 @@ int main(int argc, char ** argv){
 	squareWave(440);
     }
     else{
-	squareWave(0);
+	squareWave(1);
     }
     //FPS Limiting
       if (1000 / FPS > SDL_GetTicks() - m_startTime)
