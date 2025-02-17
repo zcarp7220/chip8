@@ -1,11 +1,18 @@
 #include "functions.h"
 #define ROM_SIZE 1000
 #define FPS 120
+#define SAMPLE_RATE 44100
+#define AMPLITUDE 28000
 bool keyboard[16];
 bool screen[64][32];
 bool quit = false;
 const char keymap[17] = "1234qwerasfzxcv";
 char* check;
+void callback(void *userdata, Uint8 *stream, int len);
+void squareWave(int pitch); 
+void audioInit();
+char keyinput;
+static int freq = 440;  
 u_int8_t memory[4096] = {
 0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
 0x20, 0x60, 0x20, 0x20, 0x70, // 1
@@ -54,6 +61,7 @@ void init(char *file){
     fclose(rom);
 //Temp
 //memory[0x1FF] = 1;
+
   }
 int main(int argc, char ** argv){
     SDL_Event event;
@@ -66,9 +74,9 @@ int main(int argc, char ** argv){
         printf("Please enter a file name");
         exit(1);
     }
-    SDL_Init(SDL_INIT_VIDEO);
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
     SDL_CreateWindowAndRenderer(pixelSize * 64, pixelSize * 32, 0, &window, &renderer);
-    SDL_RenderClear(renderer);
+    audioInit();
     while (!quit) {
     int m_startTime = SDL_GetTicks();
     SDL_RenderClear(renderer);
@@ -86,7 +94,7 @@ int main(int argc, char ** argv){
     case SDL_QUIT:
 	   quit = true;
     case SDL_KEYDOWN:
-	char keyinput = event.key.keysym.sym;
+	keyinput = event.key.keysym.sym;
 	check = strchr(keymap ,keyinput);
 	if (check){
 	keyboard[(int)(check - keymap)] = true;
@@ -105,7 +113,10 @@ int main(int argc, char ** argv){
     PC = PC + cpuStep((memory[PC] << 8) | memory[PC + 1]);
     //Buzzer
     if(ST != 0){
-	
+	squareWave(440);
+    }
+    else{
+	squareWave(0);
     }
     //FPS Limiting
       if (1000 / FPS > SDL_GetTicks() - m_startTime)
@@ -123,4 +134,35 @@ void createLargePixel(int x, int y, int pixel_size, SDL_Renderer *renderer){
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_Rect rect = { x * pixel_size, y * pixel_size, pixel_size, pixel_size };
     SDL_RenderFillRect(renderer, &rect);
+}
+void audio_callback(void* userdata, Uint8* stream, int len) {
+    static bool high = true;
+    static int sample_count = 0;
+    Sint16* buffer = (Sint16*)stream;
+    int length = len / 2;  
+    for (int i = 0; i < length; ++i) {
+        if (sample_count >= SAMPLE_RATE / (freq * 2)) { 
+            high = !high;
+            sample_count = 0;
+        }
+
+        buffer[i] = high ? AMPLITUDE : -AMPLITUDE;
+        sample_count++;
+    }
+}
+void audioInit(){
+    SDL_AudioSpec desired_spec;
+    SDL_zero(desired_spec);
+    desired_spec.freq = SAMPLE_RATE;
+    desired_spec.format = AUDIO_S16SYS;
+    desired_spec.channels = 1;
+    desired_spec.samples = 128;
+    desired_spec.callback = audio_callback;
+
+    SDL_AudioDeviceID device_id = SDL_OpenAudioDevice(NULL, 0, &desired_spec, NULL, 0);
+    SDL_PauseAudioDevice(device_id, 0);
+    
+}
+void squareWave(int pitch) {
+    freq = pitch;
 }

@@ -11,6 +11,8 @@ u_int8_t registers[16];
 int DT = 0;
 int ST = 0;
 int skipInstructionIf(bool check);
+bool keyboardCopy;
+bool vF;
 int cpuStep(u_int16_t cI){
     if(ST != 0){
 	ST--;
@@ -21,6 +23,8 @@ int cpuStep(u_int16_t cI){
   int secondNibble = (cI & secondNibbleMask) >> 8;
   int thirdNibble  = (cI & thirdNibbleMask) >> 4;
   int fourthNibble = (cI & fourthNibbleMask);
+u_int8_t * vX = &registers[secondNibble];
+	u_int8_t * vY = &registers[thirdNibble];
   int byte2 = cI & secondByteMask;
   switch (cI & 0b1111000000000000) {
     case 0x1000:
@@ -59,9 +63,7 @@ int cpuStep(u_int16_t cI){
     case 0xC000:
     registers[secondNibble] = (random() % 255) && byte2;
     case 0x8000:
-    	u_int8_t * vX = &registers[secondNibble];
-	u_int8_t * vY = &registers[thirdNibble];
-	bool vF = registers[0xF];
+	vF = registers[0xF];
     	switch (fourthNibble){
 		case 0:
 		*vX = *vY;
@@ -138,7 +140,7 @@ int cpuStep(u_int16_t cI){
 	vI = memory[*vX * 5];
 	return 2;
 	case 0xA:
-	bool keyboardCopy = false;
+	keyboardCopy = false;
 	for(int i = 0; i < 16; i++){
 	if(keyboard[i]){
 	if(keyboardCopy != keyboard[i]){
