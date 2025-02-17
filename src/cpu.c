@@ -32,7 +32,7 @@ int cpuStep(u_int16_t cI){
     registers[secondNibble] = byte2 + registers[secondNibble];
     return 2;
     case 0xA000:
-    vI = cI & 0x0FFF ; 
+    vI = cI & 0x0FFF; 
     return 2;
     case 0xD000:
     for(int i = 0; i < fourthNibble; i++){
@@ -83,30 +83,23 @@ int cpuStep(u_int16_t cI){
 		registers[0xF] = vF;
 		return 2;
 		case 5:
-		if(*vX > *vY){
-		vF = !vF;
-		}
 		*vX -= *vY;
-		registers[0xF] = vF;
-		return 2;
-		case 6:
-		if(*vX & 1 == 1){
-		vF = !vF;
+		if(*vX > *vY){
+		registers[0x0F] = !registers[0x0F];
 		}
-		*vX = *vX >> 1;
+		return 2;	
+		case 6:
+		vF = *vX & 1;
+		*vX >>= 1;
 		registers[0xF] = vF;
 		return 2;
 		case 7:
-		if(*vY > *vX){
-		vF = !vF;
-		}
+		vF = *vY > *vX;
 		*vX = *vY - *vX;
 		registers[0xF] = vF;
 		return 2;
 		case 0x0E:
-		if(*vX & 128){
-		vF = !vF;
-		}
+		vF = *vX & 128;
 		*vX = *vX << 1;
 		registers[0xF] = vF;
 		return 2;
@@ -142,7 +135,7 @@ int cpuStep(u_int16_t cI){
 	*vX = DT;
 	return 2;
 	case 0x29:
-//	vI = memory[*vX * 5];
+	vI = memory[*vX * 5];
 	return 2;
 	}
     case 0xE000:
